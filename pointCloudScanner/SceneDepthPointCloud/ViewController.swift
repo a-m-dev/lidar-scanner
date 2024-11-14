@@ -26,78 +26,9 @@ final class ViewController: UIViewController, ARSessionDelegate {
     
     private let session = ARSession()
     private var renderer: Renderer!
-        
-    func fetchRequest() {
-//        let endpoint = "https://jsonplaceholder.typicode.com/todos/1"
-        let endpoint = "http://amdev.local:8000/hallo"
-        guard let url = URL(string: endpoint) else { return }
-        
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Error happened \(error.localizedDescription)")
-            }
-            
-            guard let data = data else {
-                print("No data found")
-                return
-            }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("/hallo >> Response data: \(jsonString)")
-            }
-        }
-        
-        task.resume()
-    }
-    
-    func postRequest(x: String, y: String, z: String, color: String) {
-        let endpoint = "http://amdev.local:8000/store"
-        guard let url = URL(string: endpoint) else { return }
-        
-        let params: [String: Any] = [
-            "x": x,
-            "y": y,
-            "z": z,
-            "color": color
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-            print("Error serializing JSON")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error: \(error.localizedDescription)")
-                return
-            }
-
-            guard let data = data else {
-                print("No data received")
-                return
-            }
-
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("/store >> POST Response data: \(jsonString)")  // Prints the JSON response
-            }
-        }
-        
-        task.resume()
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchRequest();
-        
-        postRequest(x:"10", y:"20", z:"30", color:"120, 80, 200")
         
         guard let device = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported on this device")

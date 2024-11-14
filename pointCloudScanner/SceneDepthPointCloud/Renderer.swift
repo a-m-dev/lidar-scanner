@@ -99,6 +99,9 @@ final class Renderer {
     private lazy var viewToCamera = sampleFrame.displayTransform(for: orientation, viewportSize: viewportSize).inverted()
     private lazy var lastCameraTransform = sampleFrame.camera.transform
     
+    private var BASE_BACKEND_URL: String = "http://amdev.local:8000" // MY LAPTOP
+    // private var BASE_BACKEND_URL: String = "http://LT-C02FP1Z3MD6T.local:8000" // QLIK LAPTOP
+    
     // interfaces
     var confidenceThreshold = 1 {
         didSet {
@@ -140,7 +143,76 @@ final class Renderer {
         depthStencilState = device.makeDepthStencilState(descriptor: depthStateDescriptor)!
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
+        
+        fetchRequest();
+        
+        postRequest(x:"10", y:"20", z:"30", color:"120, 80, 200")
     }
+    
+    func fetchRequest() {
+        let endpoint = "\(BASE_BACKEND_URL)/hallo"
+        guard let url = URL(string: endpoint) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Error happened \(error.localizedDescription)")
+            }
+            
+            guard let data = data else {
+                print("No data found")
+                return
+            }
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("/hallo >> Response data: \(jsonString)")
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func postRequest(x: String, y: String, z: String, color: String) {
+        let endpoint = "\(BASE_BACKEND_URL)/store"
+        guard let url = URL(string: endpoint) else { return }
+        
+        let params: [String: Any] = [
+            "x": x,
+            "y": y,
+            "z": z,
+            "color": color
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+            print("Error serializing JSON")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("/store >> POST Response data: \(jsonString)")  // Prints the JSON response
+            }
+        }
+        
+        task.resume()
+    }
+    
     
     func drawRectResized(size: CGSize) {
         viewportSize = size
@@ -381,52 +453,6 @@ final class Renderer {
         return currentFrameIndex % pickFrames == 0
     }
     
-    func postRequest(x: String, y: String, z: String, r: String, g: String, b: String) {
-        let endpoint = "http://amdev.local:8000/store"
-        guard let url = URL(string: endpoint) else { return }
-        
-        let params: [String: Any] = [
-            "x": x,
-            "y": y,
-            "z": z,
-            "r": r,
-            "g": g,
-            "b": b
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-            print("Error serializing JSON")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error: \(error.localizedDescription)")
-                return
-            }
-
-            guard let data = data else {
-                print("No data received")
-                return
-            }
-
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("/store >> POST Response data: \(jsonString)")  // Prints the JSON response
-            }
-        }
-        
-        task.resume()
-    }
-    // Assuming you have a Point type that contains position and color
-    
-    
     
     private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
@@ -508,7 +534,7 @@ final class Renderer {
     }
     
     func sendPointToBackend(pointStrings: String) async {
-        let url = URL(string: "http://amdev.local:8000/point")!
+        let url = URL(string: "\(BASE_BACKEND_URL)/point")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
