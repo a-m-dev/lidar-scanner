@@ -99,8 +99,8 @@ final class Renderer {
     private lazy var viewToCamera = sampleFrame.displayTransform(for: orientation, viewportSize: viewportSize).inverted()
     private lazy var lastCameraTransform = sampleFrame.camera.transform
     
-    private var BASE_BACKEND_URL: String = "http://amdev.local:8000" // MY LAPTOP
-    // private var BASE_BACKEND_URL: String = "http://LT-C02FP1Z3MD6T.local:8000" // QLIK LAPTOP
+    private var BASE_BACKEND_URL: String = "http://amdev.local:3000" // MY LAPTOP
+    // private var BASE_BACKEND_URL: String = "http://LT-C02FP1Z3MD6T.local:3000" // QLIK LAPTOP
     
     // interfaces
     var confidenceThreshold = 1 {
@@ -144,8 +144,8 @@ final class Renderer {
         
         inFlightSemaphore = DispatchSemaphore(value: maxInFlightBuffers)
         
+        // test requests on init
         fetchRequest();
-        
         postRequest(x:"10", y:"20", z:"30", color:"120, 80, 200")
     }
     
@@ -534,7 +534,7 @@ final class Renderer {
     }
     
     func sendPointToBackend(pointStrings: String) async {
-        let url = URL(string: "\(BASE_BACKEND_URL)/point")!
+        let url = URL(string: "\(BASE_BACKEND_URL)/particles")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
