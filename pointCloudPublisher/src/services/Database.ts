@@ -11,6 +11,7 @@ export default async () => {
 
     console.log("[DB]: connection success!");
   } catch (error) {
+    console.log(error);
     console.log("[DB]: connection failed!");
   }
 };

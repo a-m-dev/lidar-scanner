@@ -26,7 +26,7 @@ services:
       test: [ "CMD", "nc", "-z", "localhost", "5672" ]
       interval: 5s
       timeout: 15s
-      retries: 1
+      retries: 5
 
     
   point-cloud-publisher:
@@ -42,6 +42,7 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_USER=guest
       - RABBITMQ_PASS=guest
+      - RABBITMQ_QUEUE=particles_queue
       - MONGO_DB_HOST=point-cloud-db
       - MONGO_DB_PORT=27017
       - MONGO_DB_USER=root
