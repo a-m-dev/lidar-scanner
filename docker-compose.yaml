@@ -1,0 +1,55 @@
+
+services:
+  point-cloud-db:
+    image: mongo
+    container_name: "point-cloud-db"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./__MONGO_DATA__:/data/db"
+
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 15s
+      retries: 1
+
+    
+  point-cloud-publisher:
+    container_name: point-cloud-publisher
+    build:
+      context: ./pointCloudPublisher
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/app/node_modules
+      - ./pointCloudPublisher:/usr/app
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - MONGO_DB_HOST=point-cloud-db
+      - MONGO_DB_PORT=27017
+      - MONGO_DB_USER=root
+      - MONGO_DB_PASS=example
+      - DB_NAME=point-cloud-storage
+    ports:
+      - 3000:3000
+    depends_on:
+      - rabbitmq
+      - point-cloud-db
+    
