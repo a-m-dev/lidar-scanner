@@ -41,13 +41,10 @@ export default async (app: Application) => {
     await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
     const promises = batch.map(async (particle) => {
       try {
-        console.log(
-          "----------------------------------------------------------------------"
-        );
+        console.log("------------------------------------------------------");
         console.log(`Message sent: ${JSON.stringify(particle)}`);
-        console.log(
-          "----------------------------------------------------------------------"
-        );
+        console.log("------------------------------------------------------");
+
         return RabbitMQService.sendMessage(
           RABBITMQ_QUEUE_NAME,
           JSON.stringify(particle)
@@ -65,26 +62,6 @@ export default async (app: Application) => {
         console.log(err);
         console.log("Failed");
       });
-
-    // send points in sequence!
-    // batch.forEach(async (particle) => {
-    //   try {
-    //     await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
-    //     await RabbitMQService.sendMessage(
-    //       RABBITMQ_QUEUE_NAME,
-    //       JSON.stringify(particle)
-    //     );
-    //     console.log(
-    //       "----------------------------------------------------------------------"
-    //     );
-    //     console.log(`Message sent: ${JSON.stringify(particle)}`);
-    //     console.log(
-    //       "----------------------------------------------------------------------"
-    //     );
-    //   } catch (error) {
-    //     console.log("Error while sending message: ", error);
-    //   }
-    // });
 
     return res.json({
       message: "Particles batch recieved!",
