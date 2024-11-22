@@ -17,7 +17,7 @@ export default async (app: Application) => {
       console.log("Error while sending message: ", error);
     }
 
-    return res.json({message: "Hello there!"});
+    return res.json({message: "Hello there from publisher app!"});
   });
 
   app.post("/store", async (req, res) => {
@@ -54,14 +54,7 @@ export default async (app: Application) => {
       }
     });
 
-    Promise.all(promises)
-      .then((res) => {
-        console.log("Messages Sent");
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log("Failed");
-      });
+    await Promise.all(promises);
 
     return res.json({
       message: "Particles batch recieved!",

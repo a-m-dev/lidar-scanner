@@ -53,4 +53,29 @@ services:
     depends_on:
       - rabbitmq
       - point-cloud-db
+
+  point-cloud-ingestor:
+    container_name: point-cloud-ingestor
+    build:
+      context: ./pointCloudIngestor
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/app/node_modules
+      - ./pointCloudIngestor:/usr/app
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_QUEUE=particles_queue
+      - MONGO_DB_HOST=point-cloud-db
+      - MONGO_DB_PORT=27017
+      - MONGO_DB_USER=root
+      - MONGO_DB_PASS=example
+      - DB_NAME=point-cloud-storage
+    ports:
+      - 4000:4000
+    depends_on:
+      - rabbitmq
+      - point-cloud-db
     
