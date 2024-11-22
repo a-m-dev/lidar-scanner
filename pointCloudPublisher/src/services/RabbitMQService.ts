@@ -9,13 +9,9 @@ class RabbitMQService {
     try {
       console.log(`RABBITMQ_URI: ${RABBITMQ_URI}`);
 
-      // TODO: fix this!
-      // wait for rabbit to be ready
-      setTimeout(async () => {
-        this.connection = await amqp.connect(RABBITMQ_URI);
-        this.channel = await this.connection.createChannel();
-        console.log("[RabbitMQ]: connection success!");
-      }, 5000);
+      this.connection = await amqp.connect(RABBITMQ_URI);
+      this.channel = await this.connection.createChannel();
+      console.log("[RabbitMQ]: connection success!");
     } catch (error) {
       console.log(error);
       console.log("[RabbitMQ]: connection failed!");

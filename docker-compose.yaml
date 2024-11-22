@@ -23,14 +23,16 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
-      interval: 5s
-      timeout: 15s
-      retries: 5
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
     
   point-cloud-publisher:
     container_name: point-cloud-publisher
+    restart: on-failure
     build:
       context: ./pointCloudPublisher
       dockerfile: Dockerfile
@@ -51,11 +53,15 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - rabbitmq
-      - point-cloud-db
+      rabbitmq:
+        condition: service_healthy
+      point-cloud-db:
+        condition: service_started
+      
 
   point-cloud-ingestor:
     container_name: point-cloud-ingestor
+    restart: on-failure
     build:
       context: ./pointCloudIngestor
       dockerfile: Dockerfile
@@ -76,6 +82,8 @@ services:
     ports:
       - 4000:4000
     depends_on:
-      - rabbitmq
-      - point-cloud-db
+      rabbitmq:
+        condition: service_healthy
+      point-cloud-db:
+        condition: service_started
     
