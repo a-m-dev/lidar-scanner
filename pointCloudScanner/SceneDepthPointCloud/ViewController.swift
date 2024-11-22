@@ -27,6 +27,8 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private let session = ARSession()
     private var renderer: Renderer!
     
+    private let createSessionButton = UIButton(type: .system)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -73,7 +75,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
         pickFramesSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
 
         // UIButton
-        recordButton.setTitle("START", for: .normal)
+        recordButton.setTitle("START Recording", for: .normal)
         recordButton.backgroundColor = .systemBlue
         recordButton.layer.cornerRadius = 5
         recordButton.addTarget(self, action: #selector(onButtonClick), for: .touchUpInside)
@@ -89,6 +91,16 @@ final class ViewController: UIViewController, ARSessionDelegate {
         textLabel.sizeToFit()
         textLabel.numberOfLines = 2
         
+        // create session button
+        createSessionButton.setImage(UIImage(systemName: "externaldrive.badge.plus"), for: .normal)
+        createSessionButton.tintColor = .white
+        createSessionButton.backgroundColor = .systemBlue
+        createSessionButton.layer.cornerRadius = 25
+        createSessionButton.translatesAutoresizingMaskIntoConstraints = false
+        createSessionButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+
+        view.addSubview(createSessionButton)
+        
         let stackView = UIStackView(arrangedSubviews: [
             confidenceControl, rgbRadiusSlider, pickFramesSlider, recordButton])
         stackView.isHidden = !isUIEnabled
@@ -98,6 +110,11 @@ final class ViewController: UIViewController, ARSessionDelegate {
         view.addSubview(stackView)
         view.addSubview(textLabel)
         NSLayoutConstraint.activate([
+            createSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            createSessionButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            createSessionButton.widthAnchor.constraint(equalToConstant: 70),
+            createSessionButton.heightAnchor.constraint(equalToConstant: 155),
+            
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
             textLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -168,16 +185,43 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private func updateIsRecording(_isRecording: Bool) {
         isRecording = _isRecording
         if (isRecording){
-            recordButton.setTitle("PAUSE", for: .normal)
+            recordButton.setTitle("STOP Recording", for: .normal)
             recordButton.backgroundColor = .systemRed
             renderer.currentFolder = getTimeStr()
             createDirectory(folder: renderer.currentFolder + "/data")
         } else {
-            recordButton.setTitle("START", for: .normal)
+            recordButton.setTitle("START Recording", for: .normal)
             recordButton.backgroundColor = .systemBlue
             renderer.savePointCloud()
         }
         renderer.isRecording = isRecording
+    }
+    
+    @objc
+    private func playButtonTapped() {
+        print("Play button tapped!")
+        
+        if createSessionButton.currentImage == UIImage(systemName: "externaldrive.badge.plus") {
+            UIView.animate(withDuration: 0.1) {
+                self.createSessionButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+                self.createSessionButton.backgroundColor = .systemGreen
+                self.createSessionButton.setImage(UIImage(systemName: "externaldrive.fill.badge.plus"), for: .normal)
+            }
+            
+            // TODO:
+            // call api to create collection
+            // and set it as active collection
+        } else {
+            self.createSessionButton.setImage(UIImage(systemName: "externaldrive.badge.plus"), for: .normal)
+            UIView.animate(withDuration: 0.1) {
+                self.createSessionButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+                self.createSessionButton.backgroundColor = .systemBlue
+                self.createSessionButton.setImage(UIImage(systemName: "externaldrive.badge.plus"), for: .normal)
+            }
+            // TODO:
+            // call api to reset active collection
+        }
+        
     }
     
     // Auto-hide the home indicator to maximize immersion in AR experiences.
