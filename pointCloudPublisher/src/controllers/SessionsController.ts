@@ -6,6 +6,7 @@ import {AllSessions} from "../models/AllSessions";
 import RabbitMQService from "../services/RabbitMQService";
 import {processParticles} from "../utils/process-particles";
 import {RABBITMQ_QUEUE_NAME} from "../config";
+import {RABBIT_MSG_TYPES} from "../constants";
 
 export const CreateActiveSession = async (req, res) => {
   // 1. create active session name
@@ -39,6 +40,16 @@ export const CreateActiveSession = async (req, res) => {
   mongoose.model<SessionDoc>(collectionName, SessionSchema);
 
   // 6. send a message to set active session in worker!
+  try {
+    const message = JSON.stringify({
+      type: RABBIT_MSG_TYPES.SET_ACTIVE_SESSION,
+      payload: collectionName,
+    });
+    await RabbitMQService.sendMessage(RABBITMQ_QUEUE_NAME, message);
+    console.log(`Message sent: ${message}`);
+  } catch (error) {
+    console.log("Error while sending message: ", error);
+  }
 
   return res.status(200).json({
     collectionName,
@@ -55,6 +66,18 @@ export const StopActiveSession = async (req, res) => {
     activeSession.name = null;
     await activeSession.save();
     console.log("Active session being set to null");
+
+    // send a message to set active session in worker!
+    try {
+      const message = JSON.stringify({
+        type: RABBIT_MSG_TYPES.RESET_ACTIVE_SESSION,
+        payload: "",
+      });
+      await RabbitMQService.sendMessage(RABBITMQ_QUEUE_NAME, message);
+      console.log(`Message sent: ${message}`);
+    } catch (error) {
+      console.log("Error while sending message: ", error);
+    }
   }
 
   return res.status(200).json({
@@ -69,16 +92,17 @@ export const publishParticles = async (req, res) => {
   // 1. process data <- this should be done in PointCloudIngestor project
   const batch = processParticles(JSON.stringify(payload.pointData));
 
-  // 2. publish to rabbitMQ
-  // - send points in parallel
-  await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
+  // 2. publish to rabbitMQ, send points in parallel
   const promises = batch.map(async (particle) => {
     try {
       console.log(`Message sent: ${JSON.stringify(particle)}`);
 
       return RabbitMQService.sendMessage(
         RABBITMQ_QUEUE_NAME,
-        JSON.stringify(particle)
+        JSON.stringify({
+          type: RABBIT_MSG_TYPES.PUBLISH_PARTICLE,
+          patload: particle,
+        })
       );
     } catch (error) {
       console.log("Error while sending message: ", error);
