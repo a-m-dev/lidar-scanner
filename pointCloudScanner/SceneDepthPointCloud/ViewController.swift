@@ -98,7 +98,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
         createSessionButton.setImage(UIImage(systemName: "externaldrive.badge.plus"), for: .normal)
         createSessionButton.tintColor = .white
         createSessionButton.backgroundColor = .systemBlue
-        createSessionButton.layer.cornerRadius = 25
+        createSessionButton.layer.cornerRadius = 35
         createSessionButton.translatesAutoresizingMaskIntoConstraints = false
         createSessionButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
 
@@ -116,7 +116,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
             createSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             createSessionButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
             createSessionButton.widthAnchor.constraint(equalToConstant: 70),
-            createSessionButton.heightAnchor.constraint(equalToConstant: 155),
+            createSessionButton.heightAnchor.constraint(equalToConstant: 70),
             
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
@@ -347,7 +347,7 @@ extension ViewController: TaskDelegate {
     }
     
     private func updateTextLabel() {
-        let text = "  1/\(self.renderer.pickFrames)  of new frames  \n  Files saved \(self.completedTaskNum)/\(self.taskNum)  "
+        let text = "  1/\(self.renderer.pickFrames)  of new frames  \n  Files saved \(self.completedTaskNum)/\(self.taskNum) "
         DispatchQueue.main.async {
             self.textLabel.text = text
         }
