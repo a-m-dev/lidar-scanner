@@ -11,7 +11,7 @@ export const CreateActiveSession = async (req, res) => {
   // 1. create active session name
   const collectionName = `${new Date().getTime()}__${getRandomComputerScientistName()}`;
 
-  // 2. find if there is ant active session
+  // 2. find if there is any active session
   const foundedActiveSession = await ActiveSession.find();
 
   // 3. create or update active session
@@ -46,6 +46,22 @@ export const CreateActiveSession = async (req, res) => {
   });
 };
 
+export const StopActiveSession = async (req, res) => {
+  // find if there is any active session
+  const foundedActiveSession = await ActiveSession.find();
+
+  if (foundedActiveSession.length !== 0) {
+    const activeSession = foundedActiveSession[0];
+    activeSession.name = null;
+    await activeSession.save();
+    console.log("Active session being set to null");
+  }
+
+  return res.status(200).json({
+    message: "active session stopped!",
+  });
+};
+
 export const publishParticles = async (req, res) => {
   console.log("Request recieved!");
   const payload = req.body;
@@ -54,7 +70,7 @@ export const publishParticles = async (req, res) => {
   const batch = processParticles(JSON.stringify(payload.pointData));
 
   // 2. publish to rabbitMQ
-  // send points in parallel
+  // - send points in parallel
   await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
   const promises = batch.map(async (particle) => {
     try {

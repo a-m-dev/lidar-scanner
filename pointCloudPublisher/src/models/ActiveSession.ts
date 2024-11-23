@@ -6,7 +6,7 @@ interface ActiveSessionDoc extends Document {
 
 const ActiveSessionSchema = new Schema(
   {
-    name: {type: String, required: true},
+    name: {type: String},
   },
   {
     toJSON: {
