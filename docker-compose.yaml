@@ -1,5 +1,9 @@
 
 services:
+
+  # ########
+  # Database
+  # ########
   point-cloud-db:
     image: mongo
     container_name: "point-cloud-db"
@@ -13,6 +17,9 @@ services:
       - "./__MONGO_DATA__:/data/db"
 
 
+  # ########
+  # RabbitMQ
+  # ########
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
@@ -30,6 +37,9 @@ services:
       start_period: 5s
 
     
+  # #####################
+  # Point Cloud Publisher
+  # #####################
   point-cloud-publisher:
     container_name: point-cloud-publisher
     restart: on-failure
@@ -59,6 +69,9 @@ services:
         condition: service_started
       
 
+  # ####################
+  # Point Cloud Ingestor
+  # ####################
   point-cloud-ingestor:
     container_name: point-cloud-ingestor
     restart: on-failure
@@ -84,6 +97,31 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      point-cloud-db:
+        condition: service_started
+
+
+  # ##################
+  # Point Cloud Reader
+  # ##################
+  point-cloud-reader:
+    container_name: point-cloud-reader
+    restart: on-failure
+    build:
+      context: ./pointCloudReader
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/app/node_modules
+      - ./pointCloudReader:/usr/app
+    environment:
+      - MONGO_DB_HOST=point-cloud-db
+      - MONGO_DB_PORT=27017
+      - MONGO_DB_USER=root
+      - MONGO_DB_PASS=example
+      - DB_NAME=point-cloud-storage
+    ports:
+      - 4200:4200
+    depends_on:
       point-cloud-db:
         condition: service_started
     
