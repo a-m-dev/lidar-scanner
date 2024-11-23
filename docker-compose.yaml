@@ -45,7 +45,6 @@ services:
       - RABBITMQ_USER=guest
       - RABBITMQ_PASS=guest
       - RABBITMQ_PARTICLES_QUEUE=particles_queue
-      - RABBITMQ_BATCH_STORE_QUEUE=batch_store_queue
       - MONGO_DB_HOST=point-cloud-db
       - MONGO_DB_PORT=27017
       - MONGO_DB_USER=root
@@ -75,7 +74,6 @@ services:
       - RABBITMQ_USER=guest
       - RABBITMQ_PASS=guest
       - RABBITMQ_PARTICLES_QUEUE=particles_queue
-      - RABBITMQ_BATCH_STORE_QUEUE=batch_store_queue
       - MONGO_DB_HOST=point-cloud-db
       - MONGO_DB_PORT=27017
       - MONGO_DB_USER=root

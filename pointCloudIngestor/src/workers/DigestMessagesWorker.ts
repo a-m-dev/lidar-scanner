@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
-import {
-  // RABBITMQ_BATCH_STORE_QUEUE_NAME,
-  RABBITMQ_PARTICLES_QUEUE_NAME,
-} from "../config";
+import {RABBITMQ_PARTICLES_QUEUE_NAME} from "../config";
 import {RABBIT_MSG_TYPES} from "../constants";
 import RabbitMQService from "../services/RabbitMQService";
-// import amqp from "amqplib";
 import {SessionSchema} from "../models/Sessions";
 
 type MessageStructure<T = any> = {
@@ -21,15 +17,11 @@ export const DigestMessagesWorker = async () => {
 
   try {
     await RabbitMQService.assertQueue(RABBITMQ_PARTICLES_QUEUE_NAME);
-    // await RabbitMQService.assertQueue(RABBITMQ_BATCH_STORE_QUEUE_NAME);
 
-    console.log(
-      `[INGESTOR]: digest msg worker is ready and listening to the queue`
-    );
+    console.log(`[INGESTOR]: worker is ready and listening to the queue`);
 
     await RabbitMQService.consumeMessage(
       RABBITMQ_PARTICLES_QUEUE_NAME,
-      false,
       async (message: string) => {
         if (message != null) {
           console.log("RECEVIED MSG:", message);
@@ -51,17 +43,6 @@ export const DigestMessagesWorker = async () => {
               case RABBIT_MSG_TYPES.PUBLISH_PARTICLE: {
                 const [x, y, z, r, g, b] = parsedMessage.payload;
                 batch.push({x, y, z, r, g, b});
-
-                // if (batch.length >= DEFAULY_BATCH_SIZE) {
-                //   await RabbitMQService.sendMessage(
-                //     RABBITMQ_BATCH_STORE_QUEUE_NAME,
-                //     JSON.stringify({
-                //       type: RABBIT_MSG_TYPES.STORE_PARTICLES_BATCH,
-                //       payload: batch,
-                //     })
-                //   );
-                //   batch = [];
-                // }
 
                 // Trigger worker if not already running
                 if (!isWorkerActive) processQueue(batch);

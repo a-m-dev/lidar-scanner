@@ -34,12 +34,7 @@ class RabbitMQService {
 
   async consumeMessage(
     queueName: string,
-    ackAvailableInCallback: boolean = false,
-    cb: (
-      msg: string,
-      ack?: (msg: amqp.Message) => void,
-      consumeMessageToAck?: amqp.ConsumeMessage
-    ) => void
+    cb: (msg: string) => void
   ): Promise<void> {
     if (!this.channel) {
       throw new Error("[RabbitMQ]: channel is not initialized!");
@@ -47,12 +42,8 @@ class RabbitMQService {
 
     await this.channel.consume(queueName, (msg) => {
       if (msg) {
-        if (ackAvailableInCallback) {
-          cb(msg.content.toString(), this.channel.ack, msg);
-        } else {
-          cb(msg.content.toString());
-          this.channel.ack(msg);
-        }
+        cb(msg.content.toString());
+        this.channel.ack(msg);
       }
     });
   }
