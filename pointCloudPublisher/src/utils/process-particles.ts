@@ -20,10 +20,7 @@ const parseParticles = (value: string) => {
     arrays.push(match[1].split(",").map(Number));
   }
 
-  // console.log(arrays.length);
-  // TODO:
   // arrays are the batch that you need to store into database!
-  // console.log(arrays);
   return arrays;
 };
 

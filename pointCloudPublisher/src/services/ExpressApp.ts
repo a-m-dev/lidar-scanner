@@ -32,39 +32,5 @@ export default async (app: Application) => {
 
   app.use("/session", SessionRoute);
 
-  // TODO: move this into sessions
-  app.post("/particles", async (req, res) => {
-    console.log("Request recieved!");
-    const payload = req.body;
-
-    // 1. process data <- this should be done in PointCloudIngestor project
-    const batch = processParticles(JSON.stringify(payload.pointData));
-
-    // 2. publish to rabbitMQ
-    // send points in parallel
-    await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
-    const promises = batch.map(async (particle) => {
-      try {
-        console.log("------------------------------------------------------");
-        console.log(`Message sent: ${JSON.stringify(particle)}`);
-        console.log("------------------------------------------------------");
-
-        return RabbitMQService.sendMessage(
-          RABBITMQ_QUEUE_NAME,
-          JSON.stringify(particle)
-        );
-      } catch (error) {
-        console.log("Error while sending message: ", error);
-      }
-    });
-
-    await Promise.all(promises);
-
-    return res.json({
-      message: "Particles batch recieved!",
-      data: payload,
-    });
-  });
-
   return app;
 };

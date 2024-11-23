@@ -3,6 +3,9 @@ import {ActiveSession} from "../models/ActiveSession";
 import mongoose from "mongoose";
 import {SessionDoc, SessionSchema} from "../models/Sessions";
 import {AllSessions} from "../models/AllSessions";
+import RabbitMQService from "../services/RabbitMQService";
+import {processParticles} from "../utils/process-particles";
+import {RABBITMQ_QUEUE_NAME} from "../config";
 
 export const CreateActiveSession = async (req, res) => {
   // 1. create active session name
@@ -40,5 +43,36 @@ export const CreateActiveSession = async (req, res) => {
   return res.status(200).json({
     collectionName,
     activeSession,
+  });
+};
+
+export const publishParticles = async (req, res) => {
+  console.log("Request recieved!");
+  const payload = req.body;
+
+  // 1. process data <- this should be done in PointCloudIngestor project
+  const batch = processParticles(JSON.stringify(payload.pointData));
+
+  // 2. publish to rabbitMQ
+  // send points in parallel
+  await RabbitMQService.assertQueue(RABBITMQ_QUEUE_NAME);
+  const promises = batch.map(async (particle) => {
+    try {
+      console.log(`Message sent: ${JSON.stringify(particle)}`);
+
+      return RabbitMQService.sendMessage(
+        RABBITMQ_QUEUE_NAME,
+        JSON.stringify(particle)
+      );
+    } catch (error) {
+      console.log("Error while sending message: ", error);
+    }
+  });
+
+  await Promise.all(promises);
+
+  return res.json({
+    message: "Particles batch recieved!",
+    data: payload,
   });
 };

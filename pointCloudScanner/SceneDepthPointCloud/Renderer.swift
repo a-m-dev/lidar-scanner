@@ -534,7 +534,7 @@ final class Renderer {
     }
     
     func sendPointToBackend(pointStrings: String) async {
-        let url = URL(string: "\(BASE_BACKEND_URL)/particles")!
+        let url = URL(string: "\(BASE_BACKEND_URL)/session/particles")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
