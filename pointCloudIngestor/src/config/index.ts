@@ -21,4 +21,7 @@ export const MONGO_URI = `mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@${MONGO_DB
 // 'amqp://guest:guest@localhost:5672'
 export const RABBITMQ_URI = `amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}`;
 
-export const RABBITMQ_QUEUE_NAME = process.env.RABBITMQ_QUEUE;
+export const RABBITMQ_PARTICLES_QUEUE_NAME =
+  process.env.RABBITMQ_PARTICLES_QUEUE;
+export const RABBITMQ_BATCH_STORE_QUEUE_NAME =
+  process.env.RABBITMQ_BATCH_STORE_QUEUE;

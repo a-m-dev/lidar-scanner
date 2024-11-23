@@ -5,7 +5,7 @@ import {SessionDoc, SessionSchema} from "../models/Sessions";
 import {AllSessions} from "../models/AllSessions";
 import RabbitMQService from "../services/RabbitMQService";
 import {processParticles} from "../utils/process-particles";
-import {RABBITMQ_QUEUE_NAME} from "../config";
+import {RABBITMQ_PARTICLES_QUEUE_NAME} from "../config";
 import {RABBIT_MSG_TYPES} from "../constants";
 
 export const CreateActiveSession = async (req, res) => {
@@ -45,7 +45,7 @@ export const CreateActiveSession = async (req, res) => {
       type: RABBIT_MSG_TYPES.SET_ACTIVE_SESSION,
       payload: collectionName,
     });
-    await RabbitMQService.sendMessage(RABBITMQ_QUEUE_NAME, message);
+    await RabbitMQService.sendMessage(RABBITMQ_PARTICLES_QUEUE_NAME, message);
     console.log(`Message sent: ${message}`);
   } catch (error) {
     console.log("Error while sending message: ", error);
@@ -73,7 +73,7 @@ export const StopActiveSession = async (req, res) => {
         type: RABBIT_MSG_TYPES.RESET_ACTIVE_SESSION,
         payload: "",
       });
-      await RabbitMQService.sendMessage(RABBITMQ_QUEUE_NAME, message);
+      await RabbitMQService.sendMessage(RABBITMQ_PARTICLES_QUEUE_NAME, message);
       console.log(`Message sent: ${message}`);
     } catch (error) {
       console.log("Error while sending message: ", error);
@@ -98,10 +98,10 @@ export const publishParticles = async (req, res) => {
       console.log(`Message sent: ${JSON.stringify(particle)}`);
 
       return RabbitMQService.sendMessage(
-        RABBITMQ_QUEUE_NAME,
+        RABBITMQ_PARTICLES_QUEUE_NAME,
         JSON.stringify({
           type: RABBIT_MSG_TYPES.PUBLISH_PARTICLE,
-          patload: particle,
+          payload: particle,
         })
       );
     } catch (error) {

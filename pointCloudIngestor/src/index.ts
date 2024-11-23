@@ -4,7 +4,8 @@ import {SERVER_PORT} from "./config";
 import App from "./services/ExpressApp";
 import DatabaseConnection from "./services/Database";
 import RabbitMqConnection from "./services/RabbbitMQ";
-import {ConsumeAndStoreParticlesWorker} from "./workers/ConsumeAndStoreParticlesWorker";
+import {DigestMessagesWorker} from "./workers/DigestMessagesWorker";
+import {StoreMessagesWorker} from "./workers/StoreMessagesWorker";
 
 const startServer = async () => {
   const app = express();
@@ -12,7 +13,8 @@ const startServer = async () => {
   await DatabaseConnection();
 
   await RabbitMqConnection();
-  await ConsumeAndStoreParticlesWorker();
+  await DigestMessagesWorker();
+  // await StoreMessagesWorker();
 
   await App(app);
 
