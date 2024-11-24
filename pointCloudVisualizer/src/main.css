@@ -40,21 +40,46 @@ canvas {
 
 .container {
   border-radius: 0.5rem;
-  background-color: #0089371b;
   width: 90vw;
   height: 90vh;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: 100px 1fr;
+  grid-template-rows: 140px 1fr;
+  /* background-color: #ffbf001b; */
+  background: linear-gradient(90deg, #008936, #4caf50, #76d97a);
+  background-size: 300% 300%;
+  animation: gradientAnimation 10s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .title {
-  color: #008936;
-  padding: 0 3rem;
+  color: antiquewhite;
+  padding: 0 2rem;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.title .right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.logo {
+  width: 75px;
+  height: 75px;
+  background-color: white;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+  padding: 0.5rem;
 }
 
 .title h1 {
@@ -65,7 +90,7 @@ canvas {
   all: unset;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  color: #008936;
+  color: antiquewhite;
   background-color: transparent;
   border-color: transparent;
   border: 1px solid transparent;
@@ -113,13 +138,13 @@ canvas {
 }
 
 .session {
-  border: 1px solid #008936;
-  color: #008936;
+  border: 1px solid antiquewhite;
+  color: antiquewhite;
   height: fit-content;
   padding: 0.5rem 1rem;
   overflow: hidden;
   border-radius: 0.5rem;
-  filter: drop-shadow(0 0 0rem #008936);
+  filter: drop-shadow(0 0 0rem antiquewhite);
   transition: all 1200ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
@@ -138,10 +163,10 @@ canvas {
 }
 
 .session:hover {
-  background-color: #008936;
+  background-color: antiquewhite;
   cursor: pointer;
-  color: white;
-  filter: drop-shadow(0 0 0.75rem #008936);
+  color: #008936;
+  filter: drop-shadow(0 0 0.75rem antiquewhite);
 }
 
 
