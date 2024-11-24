@@ -3,13 +3,14 @@ import {Session} from "../../types";
 import SessionComponent from "./Session";
 
 const SessionsList = () => {
-  const {isLoading, data} = useSessionsList<Session[]>();
+  const {isLoading, data, reload} = useSessionsList<Session[]>();
 
   return (
     <div className="sessions-list">
       <div className="container">
         <div className="title">
           <h1>Available Sessions:</h1>
+          <button onClick={reload}>Reload</button>
         </div>
 
         <div className="list-wrapper">
