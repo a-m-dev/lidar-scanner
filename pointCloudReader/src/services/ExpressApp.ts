@@ -2,6 +2,7 @@ import express, {Application} from "express";
 import mongoose from "mongoose";
 import {SessionSchema} from "../models/Sessions";
 import cors from "cors";
+import {AllSessions} from "../models/AllSessions";
 
 type RequestBatchQueryParams = {
   page: number;
@@ -15,6 +16,24 @@ export default async (app: Application) => {
 
   app.use("/hallo", async (req, res) => {
     return res.json({message: "Hello there from Reader service!"});
+  });
+
+  app.get("/session", async (req, res) => {
+    const allSessions = await AllSessions.find();
+
+    if (allSessions.length > 0) {
+      return res.status(200).json({
+        message: "Sessions list found",
+        size: allSessions.length,
+        data: allSessions,
+      });
+    } else {
+      return res.status(400).json({
+        message: "No session found!",
+        size: 0,
+        data: [],
+      });
+    }
   });
 
   app.get("/session/:sessionId", async (req, res) => {
