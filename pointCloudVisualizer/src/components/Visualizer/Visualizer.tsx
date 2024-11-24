@@ -19,7 +19,7 @@ const Visualizer = () => {
 
         <h1>{parseSessionName(sessionId ?? "Anonymous Viz")}</h1>
       </div>
-      <Canvas camera={{position: [0, 0, 2]}}>
+      <Canvas camera={{position: [-0.75, 0.75, 1]}}>
         <ambientLight />
         <PointCloud data={particles} />
         <OrbitControls />
