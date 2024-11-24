@@ -16,7 +16,7 @@ const SessionsList = () => {
         <div className="list-wrapper">
           {isLoading && <h3>Loading...</h3>}
 
-          {data.length === 0 ? (
+          {!isLoading && data.length === 0 ? (
             <h3>No Session is available!</h3>
           ) : (
             <div className="grid-wrapper">
