@@ -1,6 +1,6 @@
 import {useMemo} from "react";
 import * as THREE from "three";
-import {Particle} from "../types";
+import {Particle} from "../../types";
 
 type PointCloudArgs = {
   data: Particle[];

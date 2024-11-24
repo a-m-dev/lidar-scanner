@@ -6,3 +6,10 @@ export interface Particle {
   g: number;
   b: number;
 }
+
+export interface Session {
+  _id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
