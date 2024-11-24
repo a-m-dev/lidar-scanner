@@ -17,7 +17,7 @@ const useFetchData = () => {
       const result = await request.json();
       if (result.hasNextPage) {
         page.current += 1;
-        await wait(200);
+        await wait(500);
         fetchData();
       } else {
         setIsLoadComplete(true);
