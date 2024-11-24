@@ -164,12 +164,24 @@ canvas {
   color: white;
 }
 
-.back {
+.header {
   position: absolute;
   z-index: 10;
-  color: rgba(250, 235, 215, 0.396);
   left: 1rem;
   top: 1rem;
+  color: antiquewhite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header h1 {
+  margin: 0;
+  margin-left: 1rem;
+}
+
+.back {
+  color: rgba(250, 235, 215, 0.396);
   font-weight: 400;
   border-radius: 0.5rem;
   padding: 0.75rem 1.25rem;

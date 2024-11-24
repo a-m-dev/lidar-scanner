@@ -3,16 +3,22 @@ import {OrbitControls} from "@react-three/drei";
 import PointCloud from "./PointCloud";
 import ParticlesCounter from "./ParticlesCounter";
 import useFetchData from "../../hooks/useFetchData";
-import {NavLink} from "react-router";
+import {NavLink, useParams} from "react-router";
+import {parseSessionName} from "../../utils/parseSessionName";
 
 const Visualizer = () => {
   const {particles, isLoadComplete} = useFetchData();
+  const {sessionId} = useParams();
 
   return (
     <div>
-      <NavLink to="/" className="back">
-        <span>{`<- Go Back`}</span>
-      </NavLink>
+      <div className="header">
+        <NavLink to="/" className="back">
+          <span>{`<- Go Back`}</span>
+        </NavLink>
+
+        <h1>{parseSessionName(sessionId ?? "Anonymous Viz")}</h1>
+      </div>
       <Canvas camera={{position: [0, 0, 2]}}>
         <ambientLight />
         <PointCloud data={particles} />
