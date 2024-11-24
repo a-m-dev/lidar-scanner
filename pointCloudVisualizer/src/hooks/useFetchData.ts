@@ -15,9 +15,20 @@ const useFetchData = () => {
       const url = `${BASE_URL}/session/${sessionId}?page=${page.current}`;
       const request = await fetch(url);
       const result = await request.json();
-      if (result.hasNextPage) {
-        page.current += 1;
-        await wait(500);
+
+      const isRecordingURL = `${BASE_URL}/is-recording`;
+      const isRecordingResult = await (await fetch(isRecordingURL)).json();
+
+      console.log({
+        hasNextPage: result.hasNextPage,
+        isRecording: isRecordingResult.status,
+      });
+
+      if (result.hasNextPage || isRecordingResult.status) {
+        if (result.data.length > 0) {
+          page.current += 1;
+        }
+        await wait(200);
         fetchData();
       } else {
         setIsLoadComplete(true);

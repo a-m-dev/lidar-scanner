@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import {SessionSchema} from "../models/Sessions";
 import cors from "cors";
 import {AllSessions} from "../models/AllSessions";
+import {IsRecordingModel} from "../models/IsRecording";
 
 type RequestBatchQueryParams = {
   page: number;
@@ -71,6 +72,22 @@ export default async (app: Application) => {
       return res.status(400).json({
         message: "Bad Request",
       });
+    }
+  });
+
+  app.get("/is-recording", async (req, res) => {
+    try {
+      const foundedIsRecording = await IsRecordingModel.find();
+
+      return res.status(200).json({
+        status:
+          foundedIsRecording.length > 0
+            ? foundedIsRecording[0].isRecording
+            : false,
+      });
+    } catch (error) {
+      console.log(error);
+      console.log("failed to fetch is recording status");
     }
   });
 

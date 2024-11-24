@@ -7,6 +7,7 @@ import RabbitMQService from "../services/RabbitMQService";
 import {processParticles} from "../utils/process-particles";
 import {RABBITMQ_PARTICLES_QUEUE_NAME} from "../config";
 import {RABBIT_MSG_TYPES} from "../constants";
+import {IsRecordingModel} from "../models/IsRecording";
 
 export const CreateActiveSession = async (req, res) => {
   // 1. create active session name
@@ -114,5 +115,32 @@ export const publishParticles = async (req, res) => {
   return res.json({
     message: "Particles batch recieved!",
     data: payload,
+  });
+};
+
+export const handleRecordingStatus = async (req, res) => {
+  const {status} = req.body;
+
+  // 1. find if there is any IsRecording
+  const foundedIsRecordingInstance = await IsRecordingModel.find();
+
+  // 2. create or update active session
+  let isRecordingInstance;
+  if (foundedIsRecordingInstance.length === 0) {
+    // create active session and set it to the collection name
+    isRecordingInstance = await IsRecordingModel.create({
+      isRecording: status,
+    });
+    console.log("IsRecording created to: ", status);
+  } else {
+    // update isRecording
+    isRecordingInstance = foundedIsRecordingInstance[0];
+    isRecordingInstance.isRecording = status;
+    await isRecordingInstance.save();
+    console.log("IsRecording updated to: ", status);
+  }
+
+  return res.status(200).json({
+    message: status ? "recording started" : "recording stopped",
   });
 };

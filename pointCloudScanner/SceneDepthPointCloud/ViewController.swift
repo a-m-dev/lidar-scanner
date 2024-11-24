@@ -192,10 +192,12 @@ final class ViewController: UIViewController, ARSessionDelegate {
             recordButton.backgroundColor = .systemRed
             renderer.currentFolder = getTimeStr()
             createDirectory(folder: renderer.currentFolder + "/data")
+            self.callApiToSetRecordingAsTrue()
         } else {
             recordButton.setTitle("START Recording", for: .normal)
             recordButton.backgroundColor = .systemBlue
             renderer.savePointCloud()
+            self.callApiToSetRecordingAsFalse()
         }
         renderer.isRecording = isRecording
     }
@@ -267,6 +269,78 @@ final class ViewController: UIViewController, ARSessionDelegate {
         guard let url = URL(string: endpoint) else { return }
             
         let requestObject: [String: Any] = [:] // An empty dictionary
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestObject, options: []) else {
+            print("Error serializing JSON")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("/store >> POST Response data: \(jsonString)")  // Prints the JSON response
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func callApiToSetRecordingAsTrue() {
+        let endpoint = "\(BASE_BACKEND_URL)/session/set-is-recording"
+        guard let url = URL(string: endpoint) else { return }
+        
+        let requestObject: [String: Bool] = ["status": true]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestObject, options: []) else {
+            print("Error serializing JSON")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("/store >> POST Response data: \(jsonString)")  // Prints the JSON response
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func callApiToSetRecordingAsFalse() {
+        let endpoint = "\(BASE_BACKEND_URL)/session/set-is-recording"
+        guard let url = URL(string: endpoint) else { return }
+        
+        let requestObject: [String: Bool] = ["status": false]
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestObject, options: []) else {
             print("Error serializing JSON")
             return
