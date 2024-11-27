@@ -24,7 +24,7 @@ export const DigestMessagesWorker = async () => {
       RABBITMQ_PARTICLES_QUEUE_NAME,
       async (message: string) => {
         if (message != null) {
-          console.log("RECEVIED MSG:", message);
+          // console.log("RECEVIED MSG:", message);
 
           try {
             const parsedMessage = JSON.parse(message) as MessageStructure;
