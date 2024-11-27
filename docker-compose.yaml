@@ -1,4 +1,6 @@
 
+name: qlik-point-cloud
+
 services:
 
   # ########
@@ -124,4 +126,21 @@ services:
     depends_on:
       point-cloud-db:
         condition: service_started
+
+
+  # ######################
+  # Point Cloud Visualizer
+  # ######################
+  point-cloud-visualizer:
+    container_name: point-cloud-visualizer
+    restart: on-failure
+    build:
+      context: ./pointCloudVisualizer
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/app/node_modules
+      - ./pointCloudVisualizer:/usr/app
+    ports:
+      - 5173:5173
+
     
