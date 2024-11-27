@@ -13,7 +13,10 @@ const SessionsList = () => {
             <div className="logo">
               <img src="https://logosandtypes.com/wp-content/uploads/2024/01/qlik.svg" />
             </div>
-            <h1>Available Sessions:</h1>
+            <h1>
+              Point Cloud Visualizer
+              <span>Available Sessions:</span>
+            </h1>
           </div>
           <button onClick={reload}>Reload</button>
         </div>
