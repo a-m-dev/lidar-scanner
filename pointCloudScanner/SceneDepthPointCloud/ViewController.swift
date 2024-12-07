@@ -30,7 +30,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private let createSessionButton = UIButton(type: .system)
     
 //    private var BASE_BACKEND_URL: String = "http://amdev.local:3000" // MY LAPTOP
-     private var BASE_BACKEND_URL: String = "http://LT-C02FP1Z3MD6T.local:3000" // QLIK LAPTOP
+     private var BASE_BACKEND_URL: String = "http://<ADDRESS>.local:3000" // QLIK LAPTOP
     
     override func viewDidLoad() {
         super.viewDidLoad()
